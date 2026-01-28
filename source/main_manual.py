@@ -15,7 +15,7 @@ FACE_DETECTIONS = Path("/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Sit&Face_FA
 MODEL_PATH = Path("/home/mateusz-wawrzyniak/PycharmProjects/PAN_secondary_classifier_interface/model/sec_model.pth")
 OUTPUT_DIR = Path("/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_test")
 
-run_range = (3, 3)
+run_range = (1, 3)
 
 # a01 - preprocessing
 rec_context = a01.prepare_recording_for_inference(

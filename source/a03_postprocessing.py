@@ -1,5 +1,54 @@
 import pandas as pd
 from pathlib import Path
+from collections import Counter
+
+def smooth_classification(csv_path: Path, window: int, save_path: Path | None = None):
+    """
+    Smooth is_face classification along time using a majority vote window.
+
+    Parameters
+    ----------
+    csv_path : Path
+        Path to CSV with columns including ['frame', 'is_face']
+    window : int
+        Odd window size (number of frames) for smoothing. Must be >=1.
+        If 0, no smoothing is applied.
+    save_path : Path | None
+        Where to save the smoothed CSV. If None, overwrites original CSV.
+    """
+    df = pd.read_csv(csv_path)
+    if 'is_face' not in df.columns:
+        raise ValueError(f"\t\t'is_face' column not found in {csv_path}")
+
+    if window <= 0:
+        print(f"\t\tWindow=0, no smoothing applied for {csv_path.name}")
+        return df
+
+    if window % 2 == 0:
+        raise ValueError("\t\tWindow size must be odd for symmetric smoothing")
+
+    half_w = window // 2
+    smoothed = df['is_face'].tolist()
+    n = len(smoothed)
+
+    for i in range(n):
+        # define the window around the current frame
+        start = max(0, i - half_w)
+        end = min(n, i + half_w + 1)
+        window_values = smoothed[start:end]
+        # majority vote
+        majority_label = Counter(window_values).most_common(1)[0][0]
+        smoothed[i] = majority_label
+
+    df['is_face'] = smoothed
+
+    if save_path is None:
+        save_path = csv_path
+
+    df.to_csv(save_path, index=False)
+    print(f"\t\t Smoothed classification saved. ({window}-frame window)")
+
+    return df
 
 def prune_face_frames_local(rec_dict, aggregate_csv_path=None):
     """
