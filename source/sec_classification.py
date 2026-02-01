@@ -13,20 +13,16 @@ import config as conf
 """
 source .venv/bin/activate
 
-python source/sec_classification.py \
+python -u source/sec_classification.py \
   --rec_dir_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Timeseries Data + Scene Video" \
-  --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_test" \
+  --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_final" \
   --data_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Sit&Face_FACE-MAPPER_Faces_Manipulative" \
+  --run_range 3 3 \
   --aggregate \
-  --html
+  --html \
+  > run.log 2>&1
 
-python source/sec_classification.py \
-  --rec_dir_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/video_test" \
-  --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_test" \
-  --data_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Sit&Face_FACE-MAPPER_Faces_Manipulative" \
-  --run_range 1 3 \
-  --aggregate \
-  --html
+tail -f run.log
 
 python source/sec_classification.py \
   --rec_dir_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/video_test" \
@@ -59,19 +55,23 @@ def process_recording(rec_dir: Path, output_root: Path, sections_csv: Path, face
 
     # Stage 3: prune / postprocess
     if run_range[0] <= 3 <= run_range[1]:
-        print(f"\ta03. Postprocessing...")
-        model_csv_path = Path(rec_context["output_dir"]) / "model_class.csv"
-        # Optional smoothing before pruning
-        if conf.SMOOTH_WINDOW > 0:
-            print(f"\t\t Smoothing classification with window={conf.SMOOTH_WINDOW}")
-            a03.smooth_classification(
-                csv_path=model_csv_path,
-                window=conf.SMOOTH_WINDOW
-            )
-        a03.prune_face_frames_local(
-            rec_dict=rec_context,
-            aggregate_csv_path=face_detections
-        )
+        if run_range[0] <= 3 <= run_range[1]:
+            model_csv = Path(rec_context["output_dir"], "model_class.csv")
+
+            if not model_csv.exists():
+                print("\t\ta03. Skipping postprocessing (no model_class.csv)")
+            else:
+                print(f"\ta03. Postprocessing...")
+
+                a03.smooth_classification(
+                    csv_path=model_csv,
+                    window=conf.SMOOTH_WINDOW
+                )
+
+                a03.prune_face_frames_local(
+                    rec_dict=rec_context,
+                    aggregate_csv_path=face_detections
+                )
 
     return rec_context
 
