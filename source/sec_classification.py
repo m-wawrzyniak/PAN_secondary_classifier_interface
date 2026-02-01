@@ -24,13 +24,14 @@ python -u source/sec_classification.py \
 
 tail -f run.log
 
-python source/sec_classification.py \
+python -u source/sec_classification.py \
   --rec_dir_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/video_test" \
   --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_smoothed" \
   --data_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Sit&Face_FACE-MAPPER_Faces_Manipulative" \
   --run_range 1 3 \
   --aggregate \
-  --html
+  --html \
+  > run.log 2>&1
 """
 
 def process_recording(rec_dir: Path, output_root: Path, sections_csv: Path, face_detections: Path, model_path: Path, run_range=(1, 3)):
