@@ -1,7 +1,11 @@
-torch==2.10.0
-pandas~=3.0.0
-torchvision==0.25.0
-pillow~=12.1.0
-tqdm~=4.67.1
-opencv-python~=4.13.0.90
-numpy == 2.4.1
+python>=3.10,<3.11
+
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+
+numpy<2.0
+pandas
+opencv-python
+pillow
+tqdm
