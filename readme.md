@@ -25,55 +25,119 @@ For each recording, the pipeline performs the following steps:
 After all recordings are processed, the pipeline can **aggregate results across recordings** and **prune gaze/fixation CSVs** accordingly.
 
 ---
+# Example Setup (Ubuntu & Windows)
 
-## Example Setup
+## 1. Clone the project repository
 
-### 1. Download the project
-
-Download or clone the repository to your local machine (e.g. download the ZIP from GitHub and unzip it).
-
-### 2. Ensure Python ≥ 3.10 is installed
-
-Check your Python version:
+**Ubuntu / Linux / WSL:**
 
 ```bash
-python3 --version
+# Install Git LFS if not installed
+sudo apt update
+sudo apt install git-lfs
+git lfs install
+
+# Clone the repository
+git clone https://github.com/m-wawrzyniak/PAN_secondary_classifier_interface
+cd PAN_secondary_classifier_interface
+
+# Pull actual model files via Git LFS
+git lfs pull
 ```
 
-If Python is not installed, install it using your system package manager or from https://www.python.org.
+**Windows:**
 
+1. Install **Git**: [https://git-scm.com/download/win](https://git-scm.com/download/win)  
+2. Install **Git LFS**: [https://git-lfs.github.com/](https://git-lfs.github.com/)  
+3. Open **PowerShell** and run:
 
-### 3. Create a virtual environment
+```powershell
+git lfs install
+git clone https://github.com/m-wawrzyniak/PAN_secondary_classifier_interface
+cd PAN_secondary_classifier_interface
+git lfs pull
+```
 
-From the **project root directory**:
+>  **Important:** If you downloaded the ZIP from GitHub instead of cloning, the model file will be missing. You **must use Git + Git LFS** to obtain the 300 MB+ checkpoint.
+
+---
+
+## 2. Ensure Python ≥ 3.10 is installed
+
+**Check Python version:**
+
+```bash
+python3 --version  # Ubuntu / Linux
+python --version   # Windows
+```
+
+If Python is not installed, download it:
+
+- [Python for Windows](https://www.python.org/downloads/release/python-31014/)  
+- Ubuntu / Linux:  
+
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip
+```
+
+---
+
+## 3. Create a virtual environment
+
+**Ubuntu / Linux / WSL:**
 
 ```bash
 python3 -m venv .sfc_venv
 ```
 
-### 4. Activate the virtual environment
+**Windows:**
 
-```bash
-# Linux / macOS
-source .sfc_venv/bin/activate
-
-# Windows
-.sfc_venv\Scripts\activate
+```powershell
+python3 -m venv .sfc_venv
 ```
 
-### 5. Install dependencies
+---
+
+## 4. Activate the virtual environment
+
+**Ubuntu / Linux / WSL:**
+
+```bash
+source .sfc_venv/bin/activate
+```
+
+**Windows (CMD):**
+
+```cmd
+.sfc_venv\Scripts\activate.bat
+```
+
+**Windows (PowerShell):**
+
+```powershell
+.sfc_venv\Scripts\Activate.ps1
+```
+
+---
+
+## 5. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
+Check that the packages installed correctly:
+
+```bash
+pip list
+```
+
 ---
 
-## Usage
+## 6. Download input data
 
-### 1. Input data
-
-You need to download the following data from **Pupil Cloud**:
+You need **two sources of input**:
 
 1. **Scene videos and timeseries CSVs**  
    - Path: `Workspace → Project → Downloads → Timeseries CSV and Scene Video`  
@@ -87,23 +151,30 @@ You need to download the following data from **Pupil Cloud**:
 
 ---
 
-### 2. Run the pipeline
+## 7. Run the pipeline
 
-From the **project root directory**, run:
+From the **project root directory**:
+
+**Ubuntu / Linux / WSL:**
 
 ```bash
-python -u source/sec_classification.py \
+python3 -u source/sec_classification.py \
     --rec_dir_root "/path/to/recordings" \
     --output_root "/path/to/output" \
     --data_root "/path/to/data" \
-    [--run_range 1 3] \
-    [--aggregate] \
-    [--smooth_window 3] \
-    [--html] \
+    --run_range 1 3 \
+    --aggregate \
+    --html \
     > run.log 2>&1
 ```
 
-#### Command-line arguments
+**Windows (CMD / PowerShell) — one line, no line continuation:**
+
+```powershell
+python -u source\sec_classification.py --rec_dir_root "\path\to\recordings" --output_root "\path\to\output" --data_root "\path\to\data" --run_range 1 3 --aggregate --html > run.log 2>&1
+```
+
+### Command-line arguments
 
 | Argument | Description |
 |---------|-------------|
@@ -117,25 +188,28 @@ python -u source/sec_classification.py \
 
 ---
 
-### 3. Monitor progress
+## 8. Monitor progress
 
-To follow progress in real time:
+**Ubuntu / Linux / WSL:**
 
 ```bash
 tail -f run.log
 ```
 
-### 4. Check if the process is still running
+**Windows (PowerShell):**
 
-If `run.log` appears inactive for a long time, you can verify that the script is still running:
-
-```bash
-ps aux | grep sec_classification.py
+```powershell
+Get-Content .\run.log -Wait
 ```
 
-If the process appears in the list, it is still running. This is expected - the pipeline can take **several hours**, especially during frame extraction and classification.
+**Windows (CMD alternative):**
+
+```cmd
+type run.log
+```
 
 ---
+
 
 ## Output Structure
 
