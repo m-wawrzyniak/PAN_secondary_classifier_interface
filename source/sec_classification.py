@@ -26,7 +26,7 @@ tail -f run.log
 
 python -u source/sec_classification.py \
   --rec_dir_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/video_test" \
-  --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_smoothed" \
+  --output_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/interface_non_smoothed" \
   --data_root "/media/mateusz-wawrzyniak/Extreme SSD/IP_PAN/Sit&Face_FACE-MAPPER_Faces_Manipulative" \
   --run_range 1 3 \
   --aggregate \

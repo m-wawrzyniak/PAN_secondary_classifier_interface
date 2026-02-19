@@ -25,106 +25,145 @@ For each recording, the pipeline performs the following steps:
 After all recordings are processed, the pipeline can **aggregate results across recordings** and **prune gaze/fixation CSVs** accordingly.
 
 ---
-# Example Setup (Ubuntu & Windows)
+# Setup (Linux & Windows)
 
 ## 1. Clone the project repository
 
-**Ubuntu / Linux / WSL:**
+**Linux:**
 
+1. Install Git and Git LFS. Git LFS is required for downloading the classifier.
 ```bash
-# Install Git LFS if not installed
+# Update package list
 sudo apt update
+
+# Install Git (if not already installed)
+sudo apt install git
+
+# Install Git LFS (if not already installed)
 sudo apt install git-lfs
 git lfs install
-
+```
+2. Clone the repository
+```bash
 # Clone the repository
 git clone https://github.com/m-wawrzyniak/PAN_secondary_classifier_interface
+# Move to the repository
 cd PAN_secondary_classifier_interface
-
-# Pull actual model files via Git LFS
+```
+3. Pull the classifier model via Git FLS
+```bash
+# Pull the classifier
 git lfs pull
 ```
 
 **Windows:**
 
-1. Install **Git**: [https://git-scm.com/download/win](https://git-scm.com/download/win)  
-2. Install **Git LFS**: [https://git-lfs.github.com/](https://git-lfs.github.com/)  
+1. Install **Git**: [https://git-scm.com/download/win](https://git-scm.com/download/win). It's required to download the classifier interface.
+2. Install **Git LFS**: [https://git-lfs.github.com/](https://git-lfs.github.com/). It's required to download the classifier model.
 3. Open **PowerShell** and run:
+   1. Mount Git LFS:
+    ```powershell
+    git lfs install
+    ```
+   2. Clone the repository:
+    ```powershell
+    git clone https://github.com/m-wawrzyniak/PAN_secondary_classifier_interface
+    ```
+   3. Pull the classifier model via Git LFS
+    ```powershell
+    cd PAN_secondary_classifier_interface
+    git lfs pull
+    ```
 
-```powershell
-git lfs install
-git clone https://github.com/m-wawrzyniak/PAN_secondary_classifier_interface
-cd PAN_secondary_classifier_interface
-git lfs pull
-```
-
->  **Important:** If you downloaded the ZIP from GitHub instead of cloning, the model file will be missing. You **must use Git + Git LFS** to obtain the 300 MB+ checkpoint.
+>  **Important:** If you downloaded the ZIP from GitHub instead of cloning, the model file will be missing. You **must use Git + Git LFS**.
 
 ---
 
-## 2. Ensure Python ≥ 3.10 is installed
+## 2. Ensure Python 3.12 is installed
 
-**Check Python version:**
-
+**Linux:**
+1. Check if Python 3.12 is available on your local machine:
 ```bash
-python3 --version  # Ubuntu / Linux
-python --version   # Windows
+python3.12 --version
 ```
-
-If Python is not installed, download it:
-
-- [Python for Windows](https://www.python.org/downloads/release/python-31014/)  
-- Ubuntu / Linux:  
-
+2. If not, download it:
 ```bash
 sudo apt update
-sudo apt install python3 python3-venv python3-pip
+sudo apt install python3.12 python3.12-venv python3.12-dev
 ```
+
+If the package is not available in your Ubuntu version, you may need to add the deadsnakes PPA:
+```bash
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.12 python3.12-venv python3.12-dev
+
+```
+
+**Windows:**
+1. Open **CMD** and run:
+   1. Check if Python 3.12 is available:
+    ```cmd
+    python --version
+    ```
+   If you have multiple Python versions installed:
+    ```cmd
+    py -3.12 --version
+    ```
+   2. If Python 3.12 is not installed, download it: [Python for Windows](https://www.python.org/downloads/release/python-3120/)
+
 
 ---
 
 ## 3. Create a virtual environment
 
-**Ubuntu / Linux / WSL:**
+**Linux:**
 
+Create the environment, specifying Python 3.12 as the interpreter.
 ```bash
-python3 -m venv .sfc_venv
+python3.12 -m venv .sfc_venv
 ```
+
+Always create the environment in the project root directory.
 
 **Windows:**
 
-```powershell
-python3 -m venv .sfc_venv
+Using CMD, run:
+1. Navigate to the **project root directory**.
+2. Create the environment, specifying Python 3.12 as the interpreter.
+```cmd
+py -3.12 -m venv .sfc_venv
 ```
 
 ---
 
 ## 4. Activate the virtual environment
 
-**Ubuntu / Linux / WSL:**
+**Linux:**
 
 ```bash
 source .sfc_venv/bin/activate
 ```
 
-**Windows (CMD):**
+**Windows:**
 
+Using CMD within **project root directory**, run:
 ```cmd
 .sfc_venv\Scripts\activate.bat
 ```
 
-**Windows (PowerShell):**
-
-```powershell
-.sfc_venv\Scripts\Activate.ps1
-```
 
 ---
 
 ## 5. Install dependencies
 
+**Linux/Windows:**
+
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
+
 ```
 
 Check that the packages installed correctly:
@@ -155,7 +194,7 @@ You need **two sources of input**:
 
 From the **project root directory**:
 
-**Ubuntu / Linux / WSL:**
+**Linux:**
 
 ```bash
 python3 -u source/sec_classification.py \
@@ -168,10 +207,19 @@ python3 -u source/sec_classification.py \
     > run.log 2>&1
 ```
 
-**Windows (CMD / PowerShell) — one line, no line continuation:**
+**Windows:**
 
-```powershell
+Run using CMD:
+
+```cmd
 python -u source\sec_classification.py --rec_dir_root "\path\to\recordings" --output_root "\path\to\output" --data_root "\path\to\data" --run_range 1 3 --aggregate --html > run.log 2>&1
+```
+
+For example, the following arguments can be:
+```cmd
+--rec_dir_root "D:\Extreme SSD\IP_PAN\Timeseries Data + Scene Video" 
+--output_root "D:\Extreme SSD\IP_PAN\results_secondary_classification"
+--data_root "D:\Extreme SSD\IP_PAN\Sit&Face_FACE-MAPPER_Faces_Manipulative"
 ```
 
 ### Command-line arguments
@@ -190,26 +238,51 @@ python -u source\sec_classification.py --rec_dir_root "\path\to\recordings" --ou
 
 ## 8. Monitor progress
 
-**Ubuntu / Linux / WSL:**
+**Linux:**
 
+In separate Terminal window, navigate to **project root directory** and run:
 ```bash
 tail -f run.log
 ```
 
-**Windows (PowerShell):**
+**Windows:**
 
-```powershell
-Get-Content .\run.log -Wait
-```
-
-**Windows (CMD alternative):**
-
-```cmd
-type run.log
-```
+Simply navigate to the **project root directory** and open the **run.log** file when needed. Note: to refresh the file, you need to close it and open again.
 
 ---
 
+# Running the classification after the setup:
+
+**Linux:**
+1. Navigate to the **project root directory**.
+2. Activate the virtual environment.
+    ```bash
+    source .sfc_venv/bin/activate
+    ```
+3. Run:
+    ```bash
+    python3 -u source/sec_classification.py \
+    --rec_dir_root "/path/to/recordings" \
+    --output_root "/path/to/output" \
+    --data_root "/path/to/data" \
+    --run_range 1 3 \
+    --aggregate \
+    --html \
+    > run.log 2>&1
+    ```
+
+**Windows:**
+1. Open CMD and navigate to the **project root directory**.
+2. Activate the virtual environment.
+    ```cmd
+    .sfc_venv\Scripts\activate.bat
+    ```
+3. Run:
+    ```cmd
+    python -u source\sec_classification.py --rec_dir_root "\path\to\recordings" --output_root "\path\to\output" --data_root "\path\to\data" --run_range 1 3 --aggregate --html > run.log 2>&1
+    ```
+
+---
 
 ## Output Structure
 
@@ -229,6 +302,12 @@ If the pipeline is run with `--aggregate`, additional files are created in the *
   - `gaze_on_face.csv`
 
 ---
+
+## Known issues:
+
+1. Microsoft Visual Studio C++ Redistributable 2015-2022:
+
+    If running the script failed, you may need to download and install the following software: 	https://aka.ms/vc14/vc_redist.x64.exe
 
 ## License
 
